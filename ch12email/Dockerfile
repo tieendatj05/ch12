@@ -1,23 +1,22 @@
-# --- Stage 1: Build WAR file using Maven ---
+# --- Build stage (Maven) ---
 FROM maven:3.9.6-eclipse-temurin-17 AS build
 WORKDIR /app
 
-# Copy pom.xml và tải dependencies trước
+# copy pom trước để cache dependencies
 COPY pom.xml .
 RUN mvn -q -DskipTests dependency:go-offline
 
-# Copy code và build WAR
+# copy src và build WAR
 COPY src ./src
-RUN mvn -q -DskipTests package
+RUN mvn -q -DskipTests clean package
 
-# --- Stage 2: Run on Tomcat 10 ---
-FROM tomcat:10.1-jdk17
-
-# Xóa các ứng dụng mặc định của Tomcat
+# --- Run stage (Tomcat 10/JDK17) ---
+FROM tomcat:10.1-jdk17-temurin
+# bỏ webapps mẫu cho nhẹ
 RUN rm -rf /usr/local/tomcat/webapps/*
 
-# Copy WAR build ra thành ROOT.war để chạy ở "/"
-COPY --from=build /app/target/*.war /usr/local/tomcat/webapps/ROOT.war
+# nếu trong pom.xml bạn đã đặt <finalName>ch12email</finalName>
+COPY --from=build /app/target/ch12email.war /usr/local/tomcat/webapps/ROOT.war
 
 EXPOSE 8080
-CMD ["catalina.sh", "run"]
+CMD ["catalina.sh","run"]
