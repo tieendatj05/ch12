@@ -1,0 +1,6 @@
+com\lordbao\data\ConnectionPool.class
+com\lordbao\email\EmailListServlet.class
+com\lordbao\data\DBUtil.class
+com\lordbao\data\UserDB.class
+com\lordbao\business\EmailListServlet.class
+com\lordbao\business\User.class
